@@ -1,5 +1,9 @@
 # ConvoBench
 
+<p align="center">
+  <img src="public/logo.jpg" alt="ConvoBench Logo" width="200" />
+</p>
+
 **Voice Agent Paper Hunt** - Curated collection of academic papers on Conversational AI, Voice Agents, Speech LLMs, and Real-time Voice Interaction.
 
 🔗 **Live Site:** [convobench.org](https://convobench.org)
@@ -54,6 +58,7 @@ ConvoBench features **Dopamine Geek Style**:
 - Premium cards with glow effects on hover
 - Gradient stat cards (Blue → Purple → Pink → Orange)
 - Outfit typography for modern, readable text
+- Custom logo with voice waveform design
 
 ## 🛠️ Tech Stack
 

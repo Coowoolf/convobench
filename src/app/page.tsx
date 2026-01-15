@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import Image from 'next/image';
 import {
     Search,
     ArrowUpRight,
@@ -439,9 +440,13 @@ export default function Home() {
                 <div style={{ maxWidth: 1200, margin: '0 auto', padding: '16px 24px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                            <div className="logo-icon">
-                                <Mic className="w-5 h-5 text-white" />
-                            </div>
+                            <Image
+                                src="/logo.jpg"
+                                alt="ConvoBench Logo"
+                                width={48}
+                                height={48}
+                                style={{ borderRadius: 12 }}
+                            />
                             <div>
                                 <h1 style={{ fontSize: 20, fontWeight: 700 }} className="gradient-text">ConvoBench</h1>
                                 <p style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: -2 }}>Voice Agent Paper Hunt</p>

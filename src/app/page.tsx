@@ -306,7 +306,6 @@ export default function Home() {
     const [theme, setTheme] = useState<'light' | 'dark'>('dark');
 
     useEffect(() => {
-        // Check system preference on mount
         const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
         if (savedTheme) {
             setTheme(savedTheme);
@@ -366,32 +365,23 @@ export default function Home() {
     };
 
     return (
-        <div className="min-h-screen">
-            {/* Floating Decorations */}
-            <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="floating-shape shape-blue animate-float" style={{ width: 80, height: 80, top: '10%', left: '5%' }} />
-                <div className="floating-shape shape-purple animate-float" style={{ width: 60, height: 60, top: '20%', right: '10%', animationDelay: '1s' }} />
-                <div className="floating-shape shape-pink animate-float" style={{ width: 40, height: 40, bottom: '30%', left: '8%', animationDelay: '2s' }} />
-                <div className="floating-shape shape-orange animate-float" style={{ width: 50, height: 50, bottom: '15%', right: '5%', animationDelay: '0.5s' }} />
-            </div>
-
+        <div className="min-h-screen" style={{ background: 'var(--background)' }}>
             {/* Header */}
-            <header style={{ borderBottom: '1px solid var(--border-color)' }}>
-                <div className="max-w-6xl mx-auto px-6 py-6">
+            <header style={{ borderBottom: '1px solid var(--border)' }}>
+                <div className="max-w-6xl mx-auto px-6 py-5">
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3">
                             <div
-                                className="w-12 h-12 rounded-xl flex items-center justify-center"
+                                className="w-10 h-10 rounded-xl flex items-center justify-center"
                                 style={{
-                                    background: 'linear-gradient(135deg, var(--blue-start), var(--purple-end))',
-                                    boxShadow: '0 6px 20px rgba(91, 159, 255, 0.3)'
+                                    background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
                                 }}
                             >
-                                <Mic className="w-6 h-6 text-white" />
+                                <Mic className="w-5 h-5 text-white" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-extrabold gradient-text">ConvoBench</h1>
-                                <p className="text-sm font-medium" style={{ color: 'var(--text-muted)' }}>
+                                <h1 className="text-xl font-bold gradient-text">ConvoBench</h1>
+                                <p className="text-xs" style={{ color: 'var(--muted)' }}>
                                     Voice Agent Paper Hunt
                                 </p>
                             </div>
@@ -406,60 +396,60 @@ export default function Home() {
                                 rel="noopener noreferrer"
                                 className="btn-secondary"
                             >
-                                <Github className="w-5 h-5" />
+                                <Github className="w-4 h-4" />
                                 <span>GitHub</span>
                             </a>
                         </div>
                     </div>
 
                     {/* Hero */}
-                    <div className="mt-12 text-center">
-                        <h2 className="text-4xl md:text-5xl font-extrabold leading-tight" style={{ color: 'var(--text-primary)' }}>
+                    <div className="mt-10 text-center">
+                        <h2 className="text-3xl md:text-4xl font-bold" style={{ color: 'var(--foreground)' }}>
                             Discover{' '}
                             <span className="gradient-text">Voice Agent</span>{' '}
                             Research
                         </h2>
-                        <p className="mt-4 text-lg font-medium max-w-2xl mx-auto" style={{ color: 'var(--text-muted)' }}>
+                        <p className="mt-3 text-base max-w-xl mx-auto" style={{ color: 'var(--muted)' }}>
                             Curated collection of papers on Conversational AI, Voice Agents,
                             Speech LLMs, and Real-time Voice Interaction
                         </p>
                     </div>
 
                     {/* Stats */}
-                    <div className="mt-10 grid grid-cols-4 gap-4">
+                    <div className="mt-8 grid grid-cols-4 gap-3">
                         <div className="stat-card stat-blue">
-                            <div className="text-3xl font-extrabold">{stats.total}</div>
-                            <div className="text-sm font-semibold opacity-90 mt-1">Papers</div>
+                            <div className="text-2xl font-bold">{stats.total}</div>
+                            <div className="text-xs opacity-90">Papers</div>
                         </div>
                         <div className="stat-card stat-purple">
-                            <div className="text-3xl font-extrabold">{stats.benchmarks}</div>
-                            <div className="text-sm font-semibold opacity-90 mt-1">Benchmarks</div>
+                            <div className="text-2xl font-bold">{stats.benchmarks}</div>
+                            <div className="text-xs opacity-90">Benchmarks</div>
                         </div>
                         <div className="stat-card stat-pink">
-                            <div className="text-3xl font-extrabold">{stats.thisYear}</div>
-                            <div className="text-sm font-semibold opacity-90 mt-1">2024+ Papers</div>
+                            <div className="text-2xl font-bold">{stats.thisYear}</div>
+                            <div className="text-xs opacity-90">2024+ Papers</div>
                         </div>
                         <div className="stat-card stat-orange">
-                            <div className="text-3xl font-extrabold">{stats.totalCitations.toLocaleString()}</div>
-                            <div className="text-sm font-semibold opacity-90 mt-1">Citations</div>
+                            <div className="text-2xl font-bold">{stats.totalCitations.toLocaleString()}</div>
+                            <div className="text-xs opacity-90">Citations</div>
                         </div>
                     </div>
                 </div>
             </header>
 
             {/* Main Content */}
-            <main className="max-w-6xl mx-auto px-6 py-8 relative z-10">
+            <main className="max-w-6xl mx-auto px-6 py-6">
                 {/* Search & Filter */}
-                <div className="flex flex-col md:flex-row gap-4 mb-8">
+                <div className="flex flex-col md:flex-row gap-3 mb-6">
                     <div className="relative flex-1">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: 'var(--text-muted)' }} />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: 'var(--muted)' }} />
                         <input
                             type="text"
                             placeholder="Search papers by title, author, or keyword..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="input-field"
-                            style={{ paddingLeft: '48px' }}
+                            style={{ paddingLeft: '44px' }}
                         />
                     </div>
                     <select
@@ -473,31 +463,29 @@ export default function Home() {
                 </div>
 
                 {/* Tags */}
-                <div className="mb-8">
-                    <div className="flex flex-wrap gap-2">
-                        {allTags.slice(0, 15).map((tag) => (
-                            <button
-                                key={tag}
-                                onClick={() => toggleTag(tag)}
-                                className={`tag ${tagColorClasses[tag] || 'tag-blue'} ${selectedTags.includes(tag) ? 'tag-active' : ''}`}
-                            >
-                                {tag}
-                            </button>
-                        ))}
-                        {selectedTags.length > 0 && (
-                            <button
-                                onClick={() => setSelectedTags([])}
-                                className="tag"
-                                style={{ background: 'transparent', color: 'var(--text-muted)', border: '1px solid var(--border-color)' }}
-                            >
-                                Clear all ✕
-                            </button>
-                        )}
-                    </div>
+                <div className="flex flex-wrap gap-2 mb-6">
+                    {allTags.slice(0, 15).map((tag) => (
+                        <button
+                            key={tag}
+                            onClick={() => toggleTag(tag)}
+                            className={`tag ${tagColorClasses[tag] || 'tag-blue'} ${selectedTags.includes(tag) ? 'tag-active' : ''}`}
+                        >
+                            {tag}
+                        </button>
+                    ))}
+                    {selectedTags.length > 0 && (
+                        <button
+                            onClick={() => setSelectedTags([])}
+                            className="tag"
+                            style={{ background: 'transparent', color: 'var(--muted)', border: '1px solid var(--border)' }}
+                        >
+                            Clear ✕
+                        </button>
+                    )}
                 </div>
 
-                {/* Results Count */}
-                <div className="mb-6 font-semibold" style={{ color: 'var(--text-muted)' }}>
+                {/* Results */}
+                <div className="mb-4 text-sm" style={{ color: 'var(--muted)' }}>
                     Showing {filteredPapers.length} of {papers.length} papers
                 </div>
 
@@ -506,51 +494,51 @@ export default function Home() {
                     {filteredPapers.map((paper) => (
                         <article
                             key={paper.id}
-                            className={`glass-card paper-accent ${paper.highlight ? '' : ''}`}
+                            className="glass-card p-5"
                             style={paper.highlight ? {
-                                boxShadow: '0 0 0 2px var(--blue-start), var(--shadow-card)'
+                                boxShadow: '0 0 0 1px var(--primary), 0 4px 20px rgba(99, 102, 241, 0.15)'
                             } : undefined}
                         >
-                            <div className="flex items-start justify-between gap-6">
-                                <div className="flex-1">
+                            <div className="flex items-start justify-between gap-5">
+                                <div className="flex-1 min-w-0">
                                     {paper.highlight && (
-                                        <span className="badge-landmark mb-3 inline-flex">
+                                        <span className="badge-landmark mb-2 inline-flex">
                                             <Sparkles className="w-3 h-3" />
                                             Landmark
                                         </span>
                                     )}
-                                    <h3 className="text-lg font-bold leading-snug" style={{ color: 'var(--text-primary)' }}>
+                                    <h3 className="text-base font-semibold leading-tight" style={{ color: 'var(--foreground)' }}>
                                         {paper.title}
                                     </h3>
-                                    <div className="flex items-center flex-wrap gap-x-4 gap-y-1 mt-2 text-sm font-medium" style={{ color: 'var(--text-muted)' }}>
+                                    <div className="flex items-center flex-wrap gap-x-4 gap-y-1 mt-2 text-sm" style={{ color: 'var(--muted)' }}>
                                         <span className="flex items-center gap-1">
-                                            <Users className="w-4 h-4" />
+                                            <Users className="w-3.5 h-3.5" />
                                             {paper.authors}
                                         </span>
                                         <span className="flex items-center gap-1">
-                                            <BookOpen className="w-4 h-4" />
+                                            <BookOpen className="w-3.5 h-3.5" />
                                             {paper.venue}
                                         </span>
                                         <span className="flex items-center gap-1">
-                                            <Calendar className="w-4 h-4" />
+                                            <Calendar className="w-3.5 h-3.5" />
                                             {paper.year}
                                         </span>
                                         {paper.citations && (
                                             <span className="flex items-center gap-1 citations">
-                                                <Star className="w-4 h-4" />
-                                                {paper.citations} citations
+                                                <Star className="w-3.5 h-3.5" />
+                                                {paper.citations}
                                             </span>
                                         )}
                                     </div>
-                                    <p className="mt-3 text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                                    <p className="mt-2 text-sm leading-relaxed" style={{ color: 'var(--muted)' }}>
                                         {paper.abstract}
                                     </p>
-                                    <div className="flex items-center gap-2 mt-4 flex-wrap">
+                                    <div className="flex items-center gap-1.5 mt-3 flex-wrap">
                                         {paper.tags.map((tag) => (
                                             <span
                                                 key={tag}
                                                 className={`tag ${tagColorClasses[tag] || 'tag-blue'}`}
-                                                style={{ fontSize: '11px', padding: '3px 10px', cursor: 'default' }}
+                                                style={{ fontSize: '11px', padding: '2px 8px', cursor: 'default' }}
                                             >
                                                 {tag}
                                             </span>
@@ -572,32 +560,31 @@ export default function Home() {
                 </div>
 
                 {filteredPapers.length === 0 && (
-                    <div className="text-center py-16" style={{ color: 'var(--text-muted)' }}>
-                        <Search className="w-16 h-16 mx-auto mb-4 opacity-30" />
-                        <p className="text-xl font-bold">No papers found</p>
-                        <p className="text-sm mt-2">Try adjusting your search or filters</p>
+                    <div className="text-center py-12" style={{ color: 'var(--muted)' }}>
+                        <Search className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                        <p className="text-lg font-medium">No papers found</p>
+                        <p className="text-sm mt-1">Try adjusting your search or filters</p>
                     </div>
                 )}
             </main>
 
             {/* Footer */}
-            <footer style={{ borderTop: '1px solid var(--border-color)' }}>
-                <div className="max-w-6xl mx-auto px-6 py-8">
+            <footer style={{ borderTop: '1px solid var(--border)' }}>
+                <div className="max-w-6xl mx-auto px-6 py-6">
                     <div className="flex items-center justify-between">
-                        <div className="text-sm font-medium" style={{ color: 'var(--text-muted)' }}>
-                            © 2024 ConvoBench. Built for the Voice Agent community.
+                        <div className="text-sm" style={{ color: 'var(--muted)' }}>
+                            © 2024 ConvoBench
                         </div>
                         <a
                             href="https://github.com/Coowoolf/convobench"
                             target="_blank"
                             rel="noopener noreferrer"
-                            style={{ color: 'var(--text-muted)' }}
-                            className="hover:opacity-80 transition-opacity"
+                            style={{ color: 'var(--muted)' }}
                         >
                             <Github className="w-5 h-5" />
                         </a>
                     </div>
-                    <div className="mt-4 text-center text-sm font-medium" style={{ color: 'var(--text-muted)' }}>
+                    <div className="mt-2 text-center text-sm" style={{ color: 'var(--muted)' }}>
                         Missing a paper?{' '}
                         <a
                             href="https://github.com/Coowoolf/convobench/issues"
@@ -606,8 +593,7 @@ export default function Home() {
                             className="gradient-text"
                         >
                             Submit a PR
-                        </a>{' '}
-                        to add it!
+                        </a>
                     </div>
                 </div>
             </footer>

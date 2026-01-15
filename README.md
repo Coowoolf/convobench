@@ -1,62 +1,115 @@
 # ConvoBench
 
-> 专业的对话式 AI Agent 评测平台 | AI Agent Evaluation Platform
+**Voice Agent Paper Hunt** - Curated collection of academic papers on Conversational AI, Voice Agents, Speech LLMs, and Real-time Voice Interaction.
 
-🌐 **Live Demo**: [convobench.org](https://convobench.org)
+🔗 **Live Site:** [convobench.org](https://convobench.org)
 
-## 功能特性
+![ConvoBench Screenshot](https://via.placeholder.com/800x400/0a0a0f/5B9FFF?text=ConvoBench)
 
-- 📊 **仪表盘** - 实时监控评测状态和通过率趋势
-- 📝 **任务管理** - 创建、编辑和管理评测任务
-- 🎯 **评测套件** - 组织任务为逻辑套件
-- ▶️ **运行评测** - 一键执行评测并查看实时进度
-- 📜 **轨迹查看** - 详细查看对话轨迹和指标
-- 📈 **分析报告** - 深入分析评测数据
+## ✨ Features
 
-## 技术栈
+- 📚 **20+ Curated Papers** - Landmark research from OpenAI, Google, Meta, and academia
+- 🔍 **Smart Search** - Filter by title, author, abstract, or keywords
+- 🏷️ **Tag-based Filtering** - Quick filter by benchmark, LLM, voice-agent, real-time, etc.
+- 📊 **Citation Sorting** - Sort papers by citations or publication year
+- 🌗 **Dual Theme** - Dark mode (default) and Light mode (Dopamine Geek Style)
+- ⭐ **Landmark Badges** - Highlighted influential papers (Whisper, GPT-4o, Google Duplex)
 
-- **Framework**: Next.js 15 (App Router)
-- **Database**: SQLite + Drizzle ORM
-- **Styling**: Tailwind CSS
-- **Charts**: Recharts
-- **State**: React Context + SWR
+## 📖 Featured Papers
 
-## 快速开始
+### Landmark Papers
+- **Whisper** - Robust Speech Recognition via Large-Scale Weak Supervision (OpenAI, 2100+ citations)
+- **Google Duplex** - AI System for Real-World Phone Tasks (Google, 1250+ citations)
+- **GPT-4o** - Omni-Modal Foundation Model with 232ms audio latency (OpenAI)
+
+### Benchmarks
+- **SUPERB** - Speech Processing Universal PERformance Benchmark
+- **VocalBench** - Benchmarking Vocal Conversational Abilities
+- **DialogBench** - Evaluating LLMs as Human-like Dialogue Systems
+- **MT-Bench** - Multi-Turn Benchmark for LLM Conversation
+- **VoiceAgentEval** - Evaluating LLMs for Expert-Level Outbound Calling
+
+### Speech Language Models
+- **Moshi** - Full-Duplex Speech-to-Speech Model (Kyutai Labs)
+- **LLaMA-Omni** - Seamless Speech Interaction with LLMs
+- **SeamlessM4T** - Multilingual & Multimodal Translation (Meta)
+
+## 🎨 Design
+
+ConvoBench features a **Dopamine Geek Style** visual system:
+
+- **Light Mode**: Cream background (#F5F3EF), Claymorphism cards, soft shadows
+- **Dark Mode**: Deep dark background (#0a0a0f), Glass-morphism cards
+- **Dopamine Gradients**: Blue → Purple → Pink → Orange color palette
+- **Floating Decorations**: Animated gradient spheres
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Styling**: CSS Variables + Custom Components
+- **Icons**: Lucide React
+- **Deployment**: Vercel
+- **Domain**: convobench.org
+
+## 🚀 Getting Started
 
 ```bash
-# 安装依赖
+# Clone the repository
+git clone https://github.com/Coowoolf/convobench.git
+
+# Navigate to project
+cd convobench
+
+# Install dependencies
 npm install
 
-# 初始化数据库
-npx drizzle-kit push
-
-# 启动开发服务器
+# Start development server
 npm run dev
+
+# Build for production
+npm run build
 ```
 
-访问 [http://localhost:3000](http://localhost:3000) 查看应用。
+## 🤝 Contributing
 
-## 环境变量
+Missing a paper? Want to add a new benchmark?
 
-复制 `.env.example` 到 `.env.local` 并配置：
+1. Fork the repository
+2. Add your paper to the `papers` array in `src/app/page.tsx`
+3. Submit a Pull Request
 
-```env
-# Agora Conversational AI
-AGORA_APP_ID=your_app_id
-AGORA_APP_CERT=your_app_cert
-AGORA_BASIC_AUTH_KEY=your_key
-AGORA_BASIC_AUTH_SECRET=your_secret
+### Paper Format
 
-# LLM for simulation & grading
-LLM_API_URL=https://api.openai.com/v1
-LLM_API_KEY=your_api_key
-LLM_MODEL=gpt-4
+```typescript
+{
+  id: "unique-id",
+  title: "Paper Title",
+  authors: "Author Names",
+  venue: "Conference/Journal",
+  year: 2024,
+  arxivId: "2401.00000",  // or use `link` for non-arXiv papers
+  tags: ["benchmark", "voice-agent", "LLM"],
+  abstract: "Brief description of the paper...",
+  citations: 100,
+  highlight: false  // Set to true for landmark papers
+}
 ```
 
-## 部署
+## 📋 Roadmap
 
-已部署到 Vercel: [convobench.org](https://convobench.org)
+- [ ] Paper submission form
+- [ ] User authentication
+- [ ] Paper upvoting system
+- [ ] RSS feed for new papers
+- [ ] Email notifications
+- [ ] Citation graph visualization
 
-## License
+## 📄 License
 
-MIT
+MIT License - feel free to use this project for your own purposes.
+
+---
+
+Built with ❤️ for the Voice Agent community.
+
+© 2024 ConvoBench

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
     Search,
     ArrowUpRight,
@@ -11,9 +11,8 @@ import {
     Sparkles,
     Github,
     Mic,
-    TrendingUp,
-    Award,
-    Zap
+    Sun,
+    Moon
 } from 'lucide-react';
 
 interface Paper {
@@ -238,7 +237,6 @@ const papers: Paper[] = [
         abstract: "A benchmark to evaluate speech reasoning capabilities of large audio-language models in factual, procedural, and normative tasks.",
         citations: 15
     },
-    // Additional Important Papers
     {
         id: "chatbot-arena",
         title: "Chatbot Arena: An Open Platform for Evaluating LLMs by Human Preference",
@@ -305,6 +303,25 @@ export default function Home() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [sortBy, setSortBy] = useState<'year' | 'citations'>('citations');
+    const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+
+    useEffect(() => {
+        // Check system preference on mount
+        const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
+        if (savedTheme) {
+            setTheme(savedTheme);
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        } else {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    }, []);
+
+    const toggleTheme = () => {
+        const newTheme = theme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+    };
 
     const filteredPapers = useMemo(() => {
         let result = papers;
@@ -349,29 +366,28 @@ export default function Home() {
     };
 
     return (
-        <div className="min-h-screen" style={{ background: 'var(--bg-cream)' }}>
+        <div className="min-h-screen">
             {/* Floating Decorations */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="floating-shape shape-blue animate-float" style={{ width: 80, height: 80, top: '10%', left: '5%' }} />
                 <div className="floating-shape shape-purple animate-float" style={{ width: 60, height: 60, top: '20%', right: '10%', animationDelay: '1s' }} />
                 <div className="floating-shape shape-pink animate-float" style={{ width: 40, height: 40, bottom: '30%', left: '8%', animationDelay: '2s' }} />
                 <div className="floating-shape shape-orange animate-float" style={{ width: 50, height: 50, bottom: '15%', right: '5%', animationDelay: '0.5s' }} />
-                <div className="floating-shape shape-purple animate-pulse-soft" style={{ width: 100, height: 100, top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
             </div>
 
             {/* Header */}
-            <header style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                <div className="max-w-5xl mx-auto px-6 py-6">
+            <header style={{ borderBottom: '1px solid var(--border-color)' }}>
+                <div className="max-w-6xl mx-auto px-6 py-6">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
                             <div
-                                className="w-14 h-14 rounded-2xl flex items-center justify-center"
+                                className="w-12 h-12 rounded-xl flex items-center justify-center"
                                 style={{
                                     background: 'linear-gradient(135deg, var(--blue-start), var(--purple-end))',
-                                    boxShadow: '0 8px 24px rgba(91, 159, 255, 0.35)'
+                                    boxShadow: '0 6px 20px rgba(91, 159, 255, 0.3)'
                                 }}
                             >
-                                <Mic className="w-7 h-7 text-white" />
+                                <Mic className="w-6 h-6 text-white" />
                             </div>
                             <div>
                                 <h1 className="text-2xl font-extrabold gradient-text">ConvoBench</h1>
@@ -380,20 +396,25 @@ export default function Home() {
                                 </p>
                             </div>
                         </div>
-                        <a
-                            href="https://github.com/Coowoolf/convobench"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="btn-soft"
-                        >
-                            <Github className="w-5 h-5" />
-                            <span>GitHub</span>
-                        </a>
+                        <div className="flex items-center gap-3">
+                            <button onClick={toggleTheme} className="theme-toggle">
+                                {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                            </button>
+                            <a
+                                href="https://github.com/Coowoolf/convobench"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn-secondary"
+                            >
+                                <Github className="w-5 h-5" />
+                                <span>GitHub</span>
+                            </a>
+                        </div>
                     </div>
 
                     {/* Hero */}
                     <div className="mt-12 text-center">
-                        <h2 className="text-4xl md:text-5xl font-extrabold leading-tight" style={{ color: 'var(--text-dark)' }}>
+                        <h2 className="text-4xl md:text-5xl font-extrabold leading-tight" style={{ color: 'var(--text-primary)' }}>
                             Discover{' '}
                             <span className="gradient-text">Voice Agent</span>{' '}
                             Research
@@ -406,19 +427,19 @@ export default function Home() {
 
                     {/* Stats */}
                     <div className="mt-10 grid grid-cols-4 gap-4">
-                        <div className="stat-card stat-card-gradient-blue">
+                        <div className="stat-card stat-blue">
                             <div className="text-3xl font-extrabold">{stats.total}</div>
                             <div className="text-sm font-semibold opacity-90 mt-1">Papers</div>
                         </div>
-                        <div className="stat-card stat-card-gradient-purple">
+                        <div className="stat-card stat-purple">
                             <div className="text-3xl font-extrabold">{stats.benchmarks}</div>
                             <div className="text-sm font-semibold opacity-90 mt-1">Benchmarks</div>
                         </div>
-                        <div className="stat-card stat-card-gradient-pink">
+                        <div className="stat-card stat-pink">
                             <div className="text-3xl font-extrabold">{stats.thisYear}</div>
                             <div className="text-sm font-semibold opacity-90 mt-1">2024+ Papers</div>
                         </div>
-                        <div className="stat-card stat-card-gradient-orange">
+                        <div className="stat-card stat-orange">
                             <div className="text-3xl font-extrabold">{stats.totalCitations.toLocaleString()}</div>
                             <div className="text-sm font-semibold opacity-90 mt-1">Citations</div>
                         </div>
@@ -427,23 +448,24 @@ export default function Home() {
             </header>
 
             {/* Main Content */}
-            <main className="max-w-5xl mx-auto px-6 py-10 relative z-10">
+            <main className="max-w-6xl mx-auto px-6 py-8 relative z-10">
                 {/* Search & Filter */}
                 <div className="flex flex-col md:flex-row gap-4 mb-8">
                     <div className="relative flex-1">
-                        <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: 'var(--text-muted)' }} />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: 'var(--text-muted)' }} />
                         <input
                             type="text"
                             placeholder="Search papers by title, author, or keyword..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="input-clay pl-14"
+                            className="input-field"
+                            style={{ paddingLeft: '48px' }}
                         />
                     </div>
                     <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value as 'year' | 'citations')}
-                        className="select-clay"
+                        className="select-field"
                     >
                         <option value="citations">Sort by Citations</option>
                         <option value="year">Sort by Year</option>
@@ -466,7 +488,7 @@ export default function Home() {
                             <button
                                 onClick={() => setSelectedTags([])}
                                 className="tag"
-                                style={{ background: 'var(--bg-cream)', color: 'var(--text-muted)' }}
+                                style={{ background: 'transparent', color: 'var(--text-muted)', border: '1px solid var(--border-color)' }}
                             >
                                 Clear all ✕
                             </button>
@@ -474,36 +496,30 @@ export default function Home() {
                     </div>
                 </div>
 
-                {/* Results */}
+                {/* Results Count */}
                 <div className="mb-6 font-semibold" style={{ color: 'var(--text-muted)' }}>
                     Showing {filteredPapers.length} of {papers.length} papers
                 </div>
 
                 {/* Papers List */}
-                <div className="space-y-5">
+                <div className="space-y-4">
                     {filteredPapers.map((paper) => (
                         <article
                             key={paper.id}
-                            className={`clay-card paper-card ${paper.highlight ? 'ring-2 ring-offset-2' : ''}`}
+                            className={`glass-card paper-accent ${paper.highlight ? '' : ''}`}
                             style={paper.highlight ? {
-                                boxShadow: '0 0 0 2px var(--blue-start), 0 8px 32px rgba(0, 0, 0, 0.06)'
+                                boxShadow: '0 0 0 2px var(--blue-start), var(--shadow-card)'
                             } : undefined}
                         >
                             <div className="flex items-start justify-between gap-6">
                                 <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        {paper.highlight && (
-                                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold"
-                                                style={{
-                                                    background: 'linear-gradient(135deg, var(--orange-start), var(--orange-end))',
-                                                    color: 'white'
-                                                }}>
-                                                <Sparkles className="w-3 h-3" />
-                                                Landmark
-                                            </span>
-                                        )}
-                                    </div>
-                                    <h3 className="text-lg font-bold leading-snug" style={{ color: 'var(--text-dark)' }}>
+                                    {paper.highlight && (
+                                        <span className="badge-landmark mb-3 inline-flex">
+                                            <Sparkles className="w-3 h-3" />
+                                            Landmark
+                                        </span>
+                                    )}
+                                    <h3 className="text-lg font-bold leading-snug" style={{ color: 'var(--text-primary)' }}>
                                         {paper.title}
                                     </h3>
                                     <div className="flex items-center flex-wrap gap-x-4 gap-y-1 mt-2 text-sm font-medium" style={{ color: 'var(--text-muted)' }}>
@@ -520,13 +536,13 @@ export default function Home() {
                                             {paper.year}
                                         </span>
                                         {paper.citations && (
-                                            <span className="flex items-center gap-1 gradient-text-pink font-bold">
-                                                <Star className="w-4 h-4" style={{ color: 'var(--orange-start)' }} />
+                                            <span className="flex items-center gap-1 citations">
+                                                <Star className="w-4 h-4" />
                                                 {paper.citations} citations
                                             </span>
                                         )}
                                     </div>
-                                    <p className="mt-3 text-sm leading-relaxed" style={{ color: 'var(--text-body)' }}>
+                                    <p className="mt-3 text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                                         {paper.abstract}
                                     </p>
                                     <div className="flex items-center gap-2 mt-4 flex-wrap">
@@ -534,7 +550,7 @@ export default function Home() {
                                             <span
                                                 key={tag}
                                                 className={`tag ${tagColorClasses[tag] || 'tag-blue'}`}
-                                                style={{ fontSize: '11px', padding: '4px 10px' }}
+                                                style={{ fontSize: '11px', padding: '3px 10px', cursor: 'default' }}
                                             >
                                                 {tag}
                                             </span>
@@ -545,7 +561,7 @@ export default function Home() {
                                     href={paper.arxivId ? `https://arxiv.org/abs/${paper.arxivId}` : paper.link}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="btn-gradient flex-shrink-0"
+                                    className="btn-primary flex-shrink-0"
                                 >
                                     <ArrowUpRight className="w-4 h-4" />
                                     {paper.arxivId ? 'arXiv' : 'Link'}
@@ -565,8 +581,8 @@ export default function Home() {
             </main>
 
             {/* Footer */}
-            <footer style={{ borderTop: '1px solid rgba(0,0,0,0.06)' }}>
-                <div className="max-w-5xl mx-auto px-6 py-8">
+            <footer style={{ borderTop: '1px solid var(--border-color)' }}>
+                <div className="max-w-6xl mx-auto px-6 py-8">
                     <div className="flex items-center justify-between">
                         <div className="text-sm font-medium" style={{ color: 'var(--text-muted)' }}>
                             © 2024 ConvoBench. Built for the Voice Agent community.
@@ -575,18 +591,19 @@ export default function Home() {
                             href="https://github.com/Coowoolf/convobench"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="link-gradient"
+                            style={{ color: 'var(--text-muted)' }}
+                            className="hover:opacity-80 transition-opacity"
                         >
                             <Github className="w-5 h-5" />
                         </a>
                     </div>
-                    <div className="mt-4 text-center text-sm font-medium" style={{ color: 'var(--text-light)' }}>
+                    <div className="mt-4 text-center text-sm font-medium" style={{ color: 'var(--text-muted)' }}>
                         Missing a paper?{' '}
                         <a
                             href="https://github.com/Coowoolf/convobench/issues"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="link-gradient"
+                            className="gradient-text"
                         >
                             Submit a PR
                         </a>{' '}

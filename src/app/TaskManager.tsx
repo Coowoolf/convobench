@@ -10,15 +10,21 @@ import {
     Activity,
     ChevronRight,
     Edit2,
-    Trash2
+    Trash2,
+    Play,
+    Loader2
 } from 'lucide-react';
 import { useApp, EvalTask } from './context';
 import { useState } from 'react';
+import { TaskModal, type TaskFormData } from './TaskModal';
 
 export function TaskManager() {
-    const { tasks, setSelectedTask, setCurrentPage } = useApp();
+    const { tasks, setSelectedTask, setCurrentPage, createTask, deleteTask, runEval, isLoadingTasks } = useApp();
     const [filter, setFilter] = useState<'all' | 'capability' | 'regression'>('all');
     const [searchQuery, setSearchQuery] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [runningTaskId, setRunningTaskId] = useState<string | null>(null);
+    const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null);
 
     const filteredTasks = tasks.filter(task => {
         const matchesFilter = filter === 'all' || task.type === filter;
@@ -32,6 +38,36 @@ export function TaskManager() {
         setCurrentPage('transcripts');
     };
 
+    const handleCreateTask = async (formData: TaskFormData) => {
+        await createTask({
+            name: formData.name,
+            description: formData.description,
+            type: formData.type,
+            category: formData.category || 'general',
+            systemPrompt: formData.systemPrompt,
+            checkpoints: formData.checkpoints,
+        });
+    };
+
+    const handleDeleteTask = async (taskId: string) => {
+        if (!confirm('确定要删除这个任务吗？')) return;
+        setDeletingTaskId(taskId);
+        try {
+            await deleteTask(taskId);
+        } finally {
+            setDeletingTaskId(null);
+        }
+    };
+
+    const handleRunEval = async (taskId: string) => {
+        setRunningTaskId(taskId);
+        try {
+            await runEval(taskId, 'mock');
+        } finally {
+            setRunningTaskId(null);
+        }
+    };
+
     return (
         <div className="space-y-6">
             {/* Header */}
@@ -40,7 +76,10 @@ export function TaskManager() {
                     <h1 className="text-2xl font-bold">任务管理</h1>
                     <p className="text-[var(--muted)] mt-1">管理和配置评测任务</p>
                 </div>
-                <button className="btn-primary flex items-center gap-2">
+                <button
+                    onClick={() => setIsModalOpen(true)}
+                    className="btn-primary flex items-center gap-2"
+                >
                     <Plus className="w-4 h-4" />
                     创建任务
                 </button>
@@ -64,7 +103,7 @@ export function TaskManager() {
                         onClick={() => setFilter('all')}
                         className={`px-4 py-2 rounded-lg text-sm transition-colors ${filter === 'all' ? 'bg-[var(--primary)] text-white' : 'bg-[var(--card)] text-[var(--muted)]'}`}
                     >
-                        全部
+                        全部 ({tasks.length})
                     </button>
                     <button
                         onClick={() => setFilter('capability')}
@@ -81,10 +120,33 @@ export function TaskManager() {
                 </div>
             </div>
 
+            {/* Loading state */}
+            {isLoadingTasks && (
+                <div className="flex items-center justify-center py-12">
+                    <Loader2 className="w-8 h-8 animate-spin text-[var(--primary)]" />
+                </div>
+            )}
+
+            {/* Empty state */}
+            {!isLoadingTasks && filteredTasks.length === 0 && (
+                <div className="glass-card p-12 text-center">
+                    <div className="text-4xl mb-4">📋</div>
+                    <h3 className="text-lg font-semibold mb-2">暂无任务</h3>
+                    <p className="text-[var(--muted)] mb-4">点击"创建任务"开始添加评测任务</p>
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="btn-primary"
+                    >
+                        <Plus className="w-4 h-4 mr-2 inline" />
+                        创建第一个任务
+                    </button>
+                </div>
+            )}
+
             {/* Task Cards */}
             <div className="grid grid-cols-2 gap-4">
                 {filteredTasks.map((task) => (
-                    <div key={task.id} className="glass-card p-5 hover:border-[var(--primary)] transition-colors cursor-pointer">
+                    <div key={task.id} className="glass-card p-5 hover:border-[var(--primary)] transition-colors">
                         <div className="flex items-start justify-between mb-3">
                             <div className="flex items-center gap-3">
                                 <StatusIcon status={task.status} />
@@ -129,11 +191,31 @@ export function TaskManager() {
                         <div className="flex items-center justify-between pt-4 border-t border-[var(--border)]">
                             <span className="text-xs text-[var(--muted)]">最后运行: {task.lastRun}</span>
                             <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => handleRunEval(task.id)}
+                                    disabled={runningTaskId === task.id}
+                                    className="p-2 hover:bg-emerald-500/20 text-emerald-400 rounded-lg transition-colors disabled:opacity-50"
+                                    title="运行评测"
+                                >
+                                    {runningTaskId === task.id ? (
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                    ) : (
+                                        <Play className="w-4 h-4" />
+                                    )}
+                                </button>
                                 <button className="p-2 hover:bg-[var(--card-hover)] rounded-lg transition-colors">
                                     <Edit2 className="w-4 h-4 text-[var(--muted)]" />
                                 </button>
-                                <button className="p-2 hover:bg-[var(--card-hover)] rounded-lg transition-colors">
-                                    <Trash2 className="w-4 h-4 text-[var(--muted)]" />
+                                <button
+                                    onClick={() => handleDeleteTask(task.id)}
+                                    disabled={deletingTaskId === task.id}
+                                    className="p-2 hover:bg-red-500/20 rounded-lg transition-colors disabled:opacity-50"
+                                >
+                                    {deletingTaskId === task.id ? (
+                                        <Loader2 className="w-4 h-4 animate-spin text-red-400" />
+                                    ) : (
+                                        <Trash2 className="w-4 h-4 text-[var(--muted)] hover:text-red-400" />
+                                    )}
                                 </button>
                                 <button
                                     onClick={() => handleViewTranscript(task)}
@@ -146,6 +228,13 @@ export function TaskManager() {
                     </div>
                 ))}
             </div>
+
+            {/* Task Modal */}
+            <TaskModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={handleCreateTask}
+            />
         </div>
     );
 }

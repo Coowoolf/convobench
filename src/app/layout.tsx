@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-    title: "Voice Agent Evals | Agora AI Engine",
-    description: "面向语音Agent的世界级评测平台",
+    title: "ConvoBench | AI Agent Evaluation Platform",
+    description: "专业的对话式 AI Agent 评测平台",
 };
 
 export default function RootLayout({

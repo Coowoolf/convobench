@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ConvoBench
 
-## Getting Started
+> 专业的对话式 AI Agent 评测平台 | AI Agent Evaluation Platform
 
-First, run the development server:
+🌐 **Live Demo**: [convobench.org](https://convobench.org)
+
+## 功能特性
+
+- 📊 **仪表盘** - 实时监控评测状态和通过率趋势
+- 📝 **任务管理** - 创建、编辑和管理评测任务
+- 🎯 **评测套件** - 组织任务为逻辑套件
+- ▶️ **运行评测** - 一键执行评测并查看实时进度
+- 📜 **轨迹查看** - 详细查看对话轨迹和指标
+- 📈 **分析报告** - 深入分析评测数据
+
+## 技术栈
+
+- **Framework**: Next.js 15 (App Router)
+- **Database**: SQLite + Drizzle ORM
+- **Styling**: Tailwind CSS
+- **Charts**: Recharts
+- **State**: React Context + SWR
+
+## 快速开始
 
 ```bash
+# 安装依赖
+npm install
+
+# 初始化数据库
+npx drizzle-kit push
+
+# 启动开发服务器
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+访问 [http://localhost:3000](http://localhost:3000) 查看应用。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 环境变量
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+复制 `.env.example` 到 `.env.local` 并配置：
 
-## Learn More
+```env
+# Agora Conversational AI
+AGORA_APP_ID=your_app_id
+AGORA_APP_CERT=your_app_cert
+AGORA_BASIC_AUTH_KEY=your_key
+AGORA_BASIC_AUTH_SECRET=your_secret
 
-To learn more about Next.js, take a look at the following resources:
+# LLM for simulation & grading
+LLM_API_URL=https://api.openai.com/v1
+LLM_API_KEY=your_api_key
+LLM_MODEL=gpt-4
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 部署
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+已部署到 Vercel: [convobench.org](https://convobench.org)
 
-## Deploy on Vercel
+## License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT

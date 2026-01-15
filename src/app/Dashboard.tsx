@@ -31,7 +31,7 @@ export function Dashboard() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold gradient-text">Voice Agent Evals</h1>
+                    <h1 className="text-3xl font-bold gradient-text">ConvoBench</h1>
                     <p className="text-[var(--muted)] mt-1">声网对话式 AI 引擎评测平台</p>
                 </div>
                 <button className="btn-primary flex items-center gap-2">
@@ -230,7 +230,7 @@ export function Dashboard() {
                                 <div className="flex items-center justify-between mb-2">
                                     <span className="font-medium">{suite.name}</span>
                                     <span className={`badge ${suite.status === 'healthy' ? 'badge-success' :
-                                            suite.status === 'warning' ? 'badge-warning' : 'badge-danger'
+                                        suite.status === 'warning' ? 'badge-warning' : 'badge-danger'
                                         }`}>
                                         {suite.status === 'healthy' ? '健康' :
                                             suite.status === 'warning' ? '注意' : '饱和'}

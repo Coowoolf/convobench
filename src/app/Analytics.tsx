@@ -59,7 +59,7 @@ export function Analytics() {
             {/* Header */}
             <div>
                 <h1 className="text-2xl font-bold">分析报告</h1>
-                <p className="text-[var(--muted)] mt-1">Voice Agent 评测数据分析与洞察</p>
+                <p className="text-[var(--muted)] mt-1">AI Agent 评测数据分析与洞察</p>
             </div>
 
             {/* Quick Stats */}

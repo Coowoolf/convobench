@@ -33,7 +33,7 @@ export function Sidebar() {
                         <Mic className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                        <h1 className="font-bold text-lg">Voice Evals</h1>
+                        <h1 className="font-bold text-lg">ConvoBench</h1>
                         <p className="text-xs text-[var(--muted)]">Agora AI Engine</p>
                     </div>
                 </div>

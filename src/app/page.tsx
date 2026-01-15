@@ -12,7 +12,8 @@ import {
     Github,
     Mic,
     Sun,
-    Moon
+    Moon,
+    ChevronRight
 } from 'lucide-react';
 
 interface Paper {
@@ -30,7 +31,6 @@ interface Paper {
 }
 
 const papers: Paper[] = [
-    // Landmark Papers
     {
         id: "whisper",
         title: "Robust Speech Recognition via Large-Scale Weak Supervision",
@@ -67,7 +67,6 @@ const papers: Paper[] = [
         citations: 890,
         highlight: true
     },
-    // Voice Agent Benchmarks
     {
         id: "superb",
         title: "SUPERB: Speech Processing Universal PERformance Benchmark",
@@ -112,7 +111,6 @@ const papers: Paper[] = [
         abstract: "A benchmark for evaluating LLMs in expert-level intelligent outbound calling scenarios with user simulation and dynamic evaluation methods.",
         citations: 18
     },
-    // Dialogue Systems
     {
         id: "dialogbench",
         title: "DialogBench: Evaluating LLMs as Human-like Dialogue Systems",
@@ -135,7 +133,6 @@ const papers: Paper[] = [
         abstract: "MT-Bench assesses LLMs in multi-turn dialogues, focusing on their capacity to maintain context and demonstrate reasoning skills across eight categories.",
         citations: 423
     },
-    // Speech Language Models
     {
         id: "moshi",
         title: "Moshi: A Full-Duplex Speech-to-Speech Model",
@@ -180,7 +177,6 @@ const papers: Paper[] = [
         abstract: "A comprehensive survey reviewing methodologies, architectural components, training approaches, and evaluation metrics for Speech Language Models.",
         citations: 89
     },
-    // Latency & Real-time
     {
         id: "sparrow-1",
         title: "Sparrow-1: Multilingual Audio Model for Real-Time Conversational Flow",
@@ -203,7 +199,6 @@ const papers: Paper[] = [
         abstract: "MiniMax Speech 2.5 achieves end-to-end latency under 250 milliseconds, enabling truly real-time voice interactions.",
         citations: 28
     },
-    // Evaluation & Metrics
     {
         id: "slue",
         title: "SLUE: Spoken Language Understanding Evaluation",
@@ -263,283 +258,213 @@ const papers: Paper[] = [
 
 const allTags = Array.from(new Set(papers.flatMap(p => p.tags))).sort();
 
-const tagColorClasses: Record<string, string> = {
-    benchmark: "tag-blue",
-    evaluation: "tag-purple",
-    "voice-agent": "tag-pink",
-    "voice-assistant": "tag-pink",
-    LLM: "tag-orange",
-    speech: "tag-blue",
-    SpeechLLM: "tag-purple",
-    "SpeechLM": "tag-purple",
-    survey: "tag-blue",
-    "real-world": "tag-pink",
-    latency: "tag-orange",
-    TTS: "tag-orange",
-    ASR: "tag-blue",
-    conversation: "tag-purple",
-    "conversational-AI": "tag-pink",
-    "foundation-model": "tag-purple",
-    "real-time": "tag-orange",
-    multimodal: "tag-purple",
-    "full-duplex": "tag-pink",
-    "speech-to-speech": "tag-pink",
-    dialogue: "tag-blue",
-    "multi-turn": "tag-blue",
-    multilingual: "tag-purple",
-    "turn-taking": "tag-orange",
-    "audio-LM": "tag-purple",
-    reasoning: "tag-blue",
-    "human-preference": "tag-pink",
-    OpenAI: "tag-orange",
-    Google: "tag-blue",
-    methodology: "tag-purple",
-    NER: "tag-blue",
-    SLU: "tag-blue",
-    translation: "tag-purple",
+const getTagColor = (tag: string): string => {
+    const colors: Record<string, string> = {
+        benchmark: "blue", evaluation: "purple", "voice-agent": "pink", "voice-assistant": "pink",
+        LLM: "orange", speech: "blue", SpeechLLM: "purple", SpeechLM: "purple", survey: "blue",
+        "real-world": "pink", latency: "orange", TTS: "orange", ASR: "blue", conversation: "purple",
+        "conversational-AI": "pink", "foundation-model": "purple", "real-time": "orange",
+        multimodal: "purple", "full-duplex": "pink", "speech-to-speech": "pink", dialogue: "blue",
+        "multi-turn": "blue", multilingual: "purple", "turn-taking": "orange", "audio-LM": "purple",
+        reasoning: "blue", "human-preference": "pink", OpenAI: "orange", Google: "blue",
+        methodology: "purple", NER: "blue", SLU: "blue", translation: "purple",
+    };
+    return colors[tag] || "blue";
 };
 
 export default function Home() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [sortBy, setSortBy] = useState<'year' | 'citations'>('citations');
-    const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+    const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
     useEffect(() => {
-        const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
-        if (savedTheme) {
-            setTheme(savedTheme);
-            document.documentElement.setAttribute('data-theme', savedTheme);
-        } else {
-            document.documentElement.setAttribute('data-theme', 'dark');
-        }
+        const saved = localStorage.getItem('theme') as 'light' | 'dark' | null;
+        const initial = saved || 'light';
+        setTheme(initial);
+        document.documentElement.setAttribute('data-theme', initial);
     }, []);
 
     const toggleTheme = () => {
-        const newTheme = theme === 'dark' ? 'light' : 'dark';
-        setTheme(newTheme);
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
+        const next = theme === 'dark' ? 'light' : 'dark';
+        setTheme(next);
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
     };
 
     const filteredPapers = useMemo(() => {
         let result = papers;
-
         if (searchQuery) {
-            const query = searchQuery.toLowerCase();
+            const q = searchQuery.toLowerCase();
             result = result.filter(p =>
-                p.title.toLowerCase().includes(query) ||
-                p.authors.toLowerCase().includes(query) ||
-                p.abstract.toLowerCase().includes(query) ||
-                p.tags.some(t => t.toLowerCase().includes(query))
+                p.title.toLowerCase().includes(q) ||
+                p.authors.toLowerCase().includes(q) ||
+                p.abstract.toLowerCase().includes(q) ||
+                p.tags.some(t => t.toLowerCase().includes(q))
             );
         }
-
         if (selectedTags.length > 0) {
-            result = result.filter(p =>
-                selectedTags.some(tag => p.tags.includes(tag))
-            );
+            result = result.filter(p => selectedTags.some(tag => p.tags.includes(tag)));
         }
-
-        result = [...result].sort((a, b) => {
-            if (sortBy === 'citations') {
-                return (b.citations || 0) - (a.citations || 0);
-            }
-            return b.year - a.year;
-        });
-
-        return result;
+        return [...result].sort((a, b) =>
+            sortBy === 'citations' ? (b.citations || 0) - (a.citations || 0) : b.year - a.year
+        );
     }, [searchQuery, selectedTags, sortBy]);
 
     const toggleTag = (tag: string) => {
-        setSelectedTags(prev =>
-            prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
-        );
+        setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
     };
 
     const stats = {
         total: papers.length,
         benchmarks: papers.filter(p => p.tags.includes("benchmark")).length,
-        thisYear: papers.filter(p => p.year >= 2024).length,
-        totalCitations: papers.reduce((sum, p) => sum + (p.citations || 0), 0)
+        recent: papers.filter(p => p.year >= 2024).length,
+        citations: papers.reduce((sum, p) => sum + (p.citations || 0), 0)
     };
 
     return (
-        <div className="min-h-screen" style={{ background: 'var(--background)' }}>
+        <div style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
+            {/* Decorations */}
+            <div className="decoration animate-pulse" style={{ width: 400, height: 400, top: -100, left: -100, background: 'linear-gradient(135deg, #5B9FFF, #7B68EE)' }} />
+            <div className="decoration animate-float" style={{ width: 300, height: 300, top: '40%', right: -80, background: 'linear-gradient(135deg, #A78BFA, #E879F9)' }} />
+            <div className="decoration animate-pulse" style={{ width: 250, height: 250, bottom: -50, left: '30%', background: 'linear-gradient(135deg, #F472B6, #FCA5A5)' }} />
+
             {/* Header */}
-            <header style={{ borderBottom: '1px solid var(--border)' }}>
-                <div className="max-w-6xl mx-auto px-6 py-5">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div
-                                className="w-10 h-10 rounded-xl flex items-center justify-center"
-                                style={{
-                                    background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                                }}
-                            >
+            <header className="header">
+                <div style={{ maxWidth: 1200, margin: '0 auto', padding: '16px 24px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                            <div className="logo-icon">
                                 <Mic className="w-5 h-5 text-white" />
                             </div>
                             <div>
-                                <h1 className="text-xl font-bold gradient-text">ConvoBench</h1>
-                                <p className="text-xs" style={{ color: 'var(--muted)' }}>
-                                    Voice Agent Paper Hunt
-                                </p>
+                                <h1 style={{ fontSize: 20, fontWeight: 700 }} className="gradient-text">ConvoBench</h1>
+                                <p style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: -2 }}>Voice Agent Paper Hunt</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3">
-                            <button onClick={toggleTheme} className="theme-toggle">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                            <button onClick={toggleTheme} className="btn btn-icon">
                                 {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                             </button>
-                            <a
-                                href="https://github.com/Coowoolf/convobench"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="btn-secondary"
-                            >
+                            <a href="https://github.com/Coowoolf/convobench" target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
                                 <Github className="w-4 h-4" />
                                 <span>GitHub</span>
                             </a>
                         </div>
                     </div>
-
-                    {/* Hero */}
-                    <div className="mt-10 text-center">
-                        <h2 className="text-3xl md:text-4xl font-bold" style={{ color: 'var(--foreground)' }}>
-                            Discover{' '}
-                            <span className="gradient-text">Voice Agent</span>{' '}
-                            Research
-                        </h2>
-                        <p className="mt-3 text-base max-w-xl mx-auto" style={{ color: 'var(--muted)' }}>
-                            Curated collection of papers on Conversational AI, Voice Agents,
-                            Speech LLMs, and Real-time Voice Interaction
-                        </p>
-                    </div>
-
-                    {/* Stats */}
-                    <div className="mt-8 grid grid-cols-4 gap-3">
-                        <div className="stat-card stat-blue">
-                            <div className="text-2xl font-bold">{stats.total}</div>
-                            <div className="text-xs opacity-90">Papers</div>
-                        </div>
-                        <div className="stat-card stat-purple">
-                            <div className="text-2xl font-bold">{stats.benchmarks}</div>
-                            <div className="text-xs opacity-90">Benchmarks</div>
-                        </div>
-                        <div className="stat-card stat-pink">
-                            <div className="text-2xl font-bold">{stats.thisYear}</div>
-                            <div className="text-xs opacity-90">2024+ Papers</div>
-                        </div>
-                        <div className="stat-card stat-orange">
-                            <div className="text-2xl font-bold">{stats.totalCitations.toLocaleString()}</div>
-                            <div className="text-xs opacity-90">Citations</div>
-                        </div>
-                    </div>
                 </div>
             </header>
 
-            {/* Main Content */}
-            <main className="max-w-6xl mx-auto px-6 py-6">
-                {/* Search & Filter */}
-                <div className="flex flex-col md:flex-row gap-3 mb-6">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: 'var(--muted)' }} />
+            {/* Hero */}
+            <section style={{ position: 'relative', zIndex: 1, padding: '60px 24px 40px', textAlign: 'center' }}>
+                <h2 style={{ fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 800, lineHeight: 1.1, color: 'var(--text-primary)' }}>
+                    Discover <span className="gradient-text">Voice Agent</span> Research
+                </h2>
+                <p style={{ marginTop: 16, fontSize: 18, color: 'var(--text-secondary)', maxWidth: 600, marginLeft: 'auto', marginRight: 'auto' }}>
+                    Curated collection of papers on Conversational AI, Speech LLMs, and Real-time Voice Interaction
+                </p>
+
+                {/* Stats */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, maxWidth: 800, margin: '40px auto 0' }}>
+                    <div className="stat-card blue">
+                        <div style={{ fontSize: 32, fontWeight: 800 }}>{stats.total}</div>
+                        <div style={{ fontSize: 13, opacity: 0.9, marginTop: 2 }}>Papers</div>
+                    </div>
+                    <div className="stat-card purple">
+                        <div style={{ fontSize: 32, fontWeight: 800 }}>{stats.benchmarks}</div>
+                        <div style={{ fontSize: 13, opacity: 0.9, marginTop: 2 }}>Benchmarks</div>
+                    </div>
+                    <div className="stat-card pink">
+                        <div style={{ fontSize: 32, fontWeight: 800 }}>{stats.recent}</div>
+                        <div style={{ fontSize: 13, opacity: 0.9, marginTop: 2 }}>2024+</div>
+                    </div>
+                    <div className="stat-card orange">
+                        <div style={{ fontSize: 32, fontWeight: 800 }}>{stats.citations.toLocaleString()}</div>
+                        <div style={{ fontSize: 13, opacity: 0.9, marginTop: 2 }}>Citations</div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Main */}
+            <main style={{ position: 'relative', zIndex: 1, maxWidth: 1200, margin: '0 auto', padding: '0 24px 60px' }}>
+                {/* Search */}
+                <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+                    <div style={{ flex: 1, position: 'relative' }}>
+                        <Search style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', width: 20, height: 20, color: 'var(--text-tertiary)' }} />
                         <input
                             type="text"
-                            placeholder="Search papers by title, author, or keyword..."
+                            placeholder="Search papers..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="input-field"
-                            style={{ paddingLeft: '44px' }}
+                            className="input"
+                            style={{ paddingLeft: 48 }}
                         />
                     </div>
-                    <select
-                        value={sortBy}
-                        onChange={(e) => setSortBy(e.target.value as 'year' | 'citations')}
-                        className="select-field"
-                    >
-                        <option value="citations">Sort by Citations</option>
-                        <option value="year">Sort by Year</option>
+                    <select value={sortBy} onChange={(e) => setSortBy(e.target.value as 'year' | 'citations')} className="select">
+                        <option value="citations">Citations</option>
+                        <option value="year">Year</option>
                     </select>
                 </div>
 
                 {/* Tags */}
-                <div className="flex flex-wrap gap-2 mb-6">
-                    {allTags.slice(0, 15).map((tag) => (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 32 }}>
+                    {allTags.slice(0, 12).map(tag => (
                         <button
                             key={tag}
                             onClick={() => toggleTag(tag)}
-                            className={`tag ${tagColorClasses[tag] || 'tag-blue'} ${selectedTags.includes(tag) ? 'tag-active' : ''}`}
+                            className={`tag ${getTagColor(tag)} ${selectedTags.includes(tag) ? 'active' : ''}`}
                         >
                             {tag}
                         </button>
                     ))}
                     {selectedTags.length > 0 && (
-                        <button
-                            onClick={() => setSelectedTags([])}
-                            className="tag"
-                            style={{ background: 'transparent', color: 'var(--muted)', border: '1px solid var(--border)' }}
-                        >
+                        <button onClick={() => setSelectedTags([])} className="tag" style={{ background: 'var(--bg-elevated)', color: 'var(--text-tertiary)' }}>
                             Clear ✕
                         </button>
                     )}
                 </div>
 
                 {/* Results */}
-                <div className="mb-4 text-sm" style={{ color: 'var(--muted)' }}>
-                    Showing {filteredPapers.length} of {papers.length} papers
-                </div>
+                <p style={{ fontSize: 14, color: 'var(--text-tertiary)', marginBottom: 16 }}>
+                    {filteredPapers.length} papers
+                </p>
 
-                {/* Papers List */}
-                <div className="space-y-4">
-                    {filteredPapers.map((paper) => (
-                        <article
-                            key={paper.id}
-                            className="glass-card p-5"
-                            style={paper.highlight ? {
-                                boxShadow: '0 0 0 1px var(--primary), 0 4px 20px rgba(99, 102, 241, 0.15)'
-                            } : undefined}
-                        >
-                            <div className="flex items-start justify-between gap-5">
-                                <div className="flex-1 min-w-0">
+                {/* Papers */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    {filteredPapers.map(paper => (
+                        <article key={paper.id} className={`card ${paper.highlight ? 'card-highlight' : ''}`}>
+                            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 20 }}>
+                                <div style={{ flex: 1, minWidth: 0 }}>
                                     {paper.highlight && (
-                                        <span className="badge-landmark mb-2 inline-flex">
-                                            <Sparkles className="w-3 h-3" />
-                                            Landmark
+                                        <span className="badge badge-landmark" style={{ marginBottom: 12, display: 'inline-flex' }}>
+                                            <Sparkles className="w-3 h-3" /> Landmark
                                         </span>
                                     )}
-                                    <h3 className="text-base font-semibold leading-tight" style={{ color: 'var(--foreground)' }}>
+                                    <h3 style={{ fontSize: 17, fontWeight: 700, lineHeight: 1.4, color: 'var(--text-primary)' }}>
                                         {paper.title}
                                     </h3>
-                                    <div className="flex items-center flex-wrap gap-x-4 gap-y-1 mt-2 text-sm" style={{ color: 'var(--muted)' }}>
-                                        <span className="flex items-center gap-1">
-                                            <Users className="w-3.5 h-3.5" />
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 16px', marginTop: 8, fontSize: 13, color: 'var(--text-secondary)' }}>
+                                        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                                            <Users className="w-4 h-4" style={{ color: 'var(--text-tertiary)' }} />
                                             {paper.authors}
                                         </span>
-                                        <span className="flex items-center gap-1">
-                                            <BookOpen className="w-3.5 h-3.5" />
-                                            {paper.venue}
-                                        </span>
-                                        <span className="flex items-center gap-1">
-                                            <Calendar className="w-3.5 h-3.5" />
-                                            {paper.year}
+                                        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                                            <BookOpen className="w-4 h-4" style={{ color: 'var(--text-tertiary)' }} />
+                                            {paper.venue} · {paper.year}
                                         </span>
                                         {paper.citations && (
-                                            <span className="flex items-center gap-1 citations">
-                                                <Star className="w-3.5 h-3.5" />
+                                            <span className="citations">
+                                                <Star className="w-4 h-4" />
                                                 {paper.citations}
                                             </span>
                                         )}
                                     </div>
-                                    <p className="mt-2 text-sm leading-relaxed" style={{ color: 'var(--muted)' }}>
+                                    <p style={{ marginTop: 12, fontSize: 14, lineHeight: 1.6, color: 'var(--text-secondary)' }}>
                                         {paper.abstract}
                                     </p>
-                                    <div className="flex items-center gap-1.5 mt-3 flex-wrap">
-                                        {paper.tags.map((tag) => (
-                                            <span
-                                                key={tag}
-                                                className={`tag ${tagColorClasses[tag] || 'tag-blue'}`}
-                                                style={{ fontSize: '11px', padding: '2px 8px', cursor: 'default' }}
-                                            >
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 14 }}>
+                                        {paper.tags.map(tag => (
+                                            <span key={tag} className={`tag ${getTagColor(tag)}`} style={{ fontSize: 11, padding: '4px 10px', cursor: 'default' }}>
                                                 {tag}
                                             </span>
                                         ))}
@@ -549,7 +474,8 @@ export default function Home() {
                                     href={paper.arxivId ? `https://arxiv.org/abs/${paper.arxivId}` : paper.link}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="btn-primary flex-shrink-0"
+                                    className="btn btn-primary"
+                                    style={{ flexShrink: 0 }}
                                 >
                                     <ArrowUpRight className="w-4 h-4" />
                                     {paper.arxivId ? 'arXiv' : 'Link'}
@@ -560,41 +486,21 @@ export default function Home() {
                 </div>
 
                 {filteredPapers.length === 0 && (
-                    <div className="text-center py-12" style={{ color: 'var(--muted)' }}>
-                        <Search className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                        <p className="text-lg font-medium">No papers found</p>
-                        <p className="text-sm mt-1">Try adjusting your search or filters</p>
+                    <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-tertiary)' }}>
+                        <Search style={{ width: 48, height: 48, margin: '0 auto 16px', opacity: 0.3 }} />
+                        <p style={{ fontSize: 18, fontWeight: 600 }}>No papers found</p>
+                        <p style={{ fontSize: 14, marginTop: 4 }}>Try adjusting your search or filters</p>
                     </div>
                 )}
             </main>
 
             {/* Footer */}
-            <footer style={{ borderTop: '1px solid var(--border)' }}>
-                <div className="max-w-6xl mx-auto px-6 py-6">
-                    <div className="flex items-center justify-between">
-                        <div className="text-sm" style={{ color: 'var(--muted)' }}>
-                            © 2024 ConvoBench
-                        </div>
-                        <a
-                            href="https://github.com/Coowoolf/convobench"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{ color: 'var(--muted)' }}
-                        >
-                            <Github className="w-5 h-5" />
-                        </a>
-                    </div>
-                    <div className="mt-2 text-center text-sm" style={{ color: 'var(--muted)' }}>
-                        Missing a paper?{' '}
-                        <a
-                            href="https://github.com/Coowoolf/convobench/issues"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="gradient-text"
-                        >
-                            Submit a PR
-                        </a>
-                    </div>
+            <footer style={{ borderTop: '1px solid var(--border)', position: 'relative', zIndex: 1 }}>
+                <div style={{ maxWidth: 1200, margin: '0 auto', padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <p style={{ fontSize: 13, color: 'var(--text-tertiary)' }}>© 2024 ConvoBench</p>
+                    <p style={{ fontSize: 13, color: 'var(--text-tertiary)' }}>
+                        Missing a paper? <a href="https://github.com/Coowoolf/convobench/issues" target="_blank" rel="noopener noreferrer" className="gradient-text" style={{ fontWeight: 600 }}>Submit a PR</a>
+                    </p>
                 </div>
             </footer>
         </div>

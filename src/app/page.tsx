@@ -215,10 +215,6 @@ export default function Home() {
 
             {/* Hero */}
             <section style={{ position: 'relative', zIndex: 1, padding: '50px 24px 30px', textAlign: 'center' }}>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 14px', borderRadius: 20, border: '1px solid var(--border)', background: 'var(--bg-elevated)', marginBottom: 16 }}>
-                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--cyan)', animation: 'pulse 2s infinite' }} />
-                    <span style={{ fontSize: 11, color: 'var(--text-tertiary)', fontFamily: 'monospace' }}>Live Document • v4.0 Ultimate</span>
-                </div>
                 <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 800, lineHeight: 1.15, color: 'var(--text-primary)' }}>
                     Conversational AI<br />
                     <span className="gradient-text">Research & Implementation</span>
@@ -299,45 +295,45 @@ export default function Home() {
 
                         {/* Architecture Comparison */}
                         <div style={{ marginTop: 40 }}>
-                            <h4 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 20 }}>Architecture Paradigm Shift</h4>
+                            <h4 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 24 }}>Architecture Paradigm Shift</h4>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
                                 {/* Legacy Cascade */}
-                                <div className="card" style={{ padding: 24, borderTop: '3px solid var(--text-tertiary)' }}>
-                                    <div style={{ fontSize: 10, fontFamily: 'monospace', color: 'var(--text-tertiary)', marginBottom: 8 }}>LEGACY: CASCADE PIPELINE</div>
-                                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 20, textAlign: 'center' }}>High Latency (~2000ms)</div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+                                <div className="card" style={{ padding: 28, borderTop: '3px solid var(--text-tertiary)' }}>
+                                    <div style={{ fontSize: 12, fontFamily: 'monospace', color: 'var(--text-tertiary)', marginBottom: 10 }}>LEGACY: CASCADE PIPELINE</div>
+                                    <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 24, textAlign: 'center' }}>High Latency (~2000ms)</div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
                                         {['Audio Input', 'ASR (Transcribe)', 'LLM (Text)', 'TTS (Synthesize)', 'Audio Output'].map((step, i) => (
                                             <div key={i}>
-                                                <div style={{ padding: '10px 24px', borderRadius: 8, fontSize: 12, background: i === 0 || i === 4 ? 'var(--bg-elevated)' : 'var(--blue)15', color: i === 0 || i === 4 ? 'var(--text-secondary)' : 'var(--blue)', border: `1px solid ${i === 0 || i === 4 ? 'var(--border)' : 'var(--blue)30'}` }}>
+                                                <div style={{ padding: '12px 28px', borderRadius: 10, fontSize: 14, fontWeight: 500, background: i === 0 || i === 4 ? 'var(--bg-elevated)' : 'var(--blue)15', color: i === 0 || i === 4 ? 'var(--text-secondary)' : 'var(--blue)', border: `1px solid ${i === 0 || i === 4 ? 'var(--border)' : 'var(--blue)30'}` }}>
                                                     {step}
                                                 </div>
-                                                {i < 4 && <div style={{ textAlign: 'center', color: 'var(--text-tertiary)', fontSize: 16, padding: '4px 0' }}>↓</div>}
+                                                {i < 4 && <div style={{ textAlign: 'center', color: 'var(--text-tertiary)', fontSize: 18, padding: '6px 0' }}>↓</div>}
                                             </div>
                                         ))}
                                     </div>
-                                    <p style={{ marginTop: 20, textAlign: 'center', fontSize: 11, color: 'var(--text-tertiary)' }}>⚠️ Lossy: Emotion lost in text • ⚠️ Slow: Serial processing</p>
+                                    <p style={{ marginTop: 24, textAlign: 'center', fontSize: 13, color: 'var(--text-tertiary)' }}>⚠️ Lossy: Emotion lost in text • ⚠️ Slow: Serial processing</p>
                                 </div>
 
                                 {/* Target Omni-Duplex */}
-                                <div className="card card-highlight" style={{ padding: 24, borderTop: '3px solid var(--cyan)' }}>
-                                    <div style={{ fontSize: 10, fontFamily: 'monospace', color: 'var(--cyan)', marginBottom: 8 }}>TARGET: OMNI-DUPLEX</div>
-                                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--cyan)', marginBottom: 20, textAlign: 'center' }}>Real-Time (~300ms)</div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-                                        <div style={{ padding: '10px 24px', borderRadius: 8, fontSize: 12, background: 'var(--bg-elevated)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}>Input Stream</div>
-                                        <div style={{ textAlign: 'center', color: 'var(--text-tertiary)', fontSize: 16 }}>↓</div>
-                                        <div style={{ padding: 24, borderRadius: 16, border: '2px dashed var(--cyan)50', background: 'var(--cyan)05', textAlign: 'center' }}>
-                                            <div style={{ fontSize: 24, marginBottom: 8 }}>👂 🧠 🎤</div>
-                                            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Joint Audio/Text Model</div>
-                                            <div style={{ fontSize: 11, color: 'var(--emerald)', marginTop: 4 }}>Listening while Speaking</div>
+                                <div className="card card-highlight" style={{ padding: 28, borderTop: '3px solid var(--cyan)' }}>
+                                    <div style={{ fontSize: 12, fontFamily: 'monospace', color: 'var(--cyan)', marginBottom: 10 }}>TARGET: OMNI-DUPLEX</div>
+                                    <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--cyan)', marginBottom: 24, textAlign: 'center' }}>Real-Time (~300ms)</div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
+                                        <div style={{ padding: '12px 28px', borderRadius: 10, fontSize: 14, fontWeight: 500, background: 'var(--bg-elevated)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}>Input Stream</div>
+                                        <div style={{ textAlign: 'center', color: 'var(--text-tertiary)', fontSize: 18 }}>↓</div>
+                                        <div style={{ padding: 28, borderRadius: 16, border: '2px dashed var(--cyan)50', background: 'var(--cyan)05', textAlign: 'center' }}>
+                                            <div style={{ fontSize: 28, marginBottom: 10 }}>👂 🧠 🎤</div>
+                                            <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>Joint Audio/Text Model</div>
+                                            <div style={{ fontSize: 13, color: 'var(--emerald)', marginTop: 6 }}>Listening while Speaking</div>
                                         </div>
-                                        <div style={{ textAlign: 'center', color: 'var(--text-tertiary)', fontSize: 16 }}>↓</div>
-                                        <div style={{ padding: '8px 20px', borderRadius: 8, fontSize: 11, background: 'var(--emerald)10', color: 'var(--emerald)', border: '1px solid var(--emerald)30', display: 'flex', gap: 16 }}>
+                                        <div style={{ textAlign: 'center', color: 'var(--text-tertiary)', fontSize: 18 }}>↓</div>
+                                        <div style={{ padding: '10px 24px', borderRadius: 8, fontSize: 13, background: 'var(--emerald)10', color: 'var(--emerald)', border: '1px solid var(--emerald)30', display: 'flex', gap: 20 }}>
                                             <span>Tools</span><span>Memory</span><span>Safety</span>
                                         </div>
-                                        <div style={{ textAlign: 'center', color: 'var(--text-tertiary)', fontSize: 16 }}>↓</div>
-                                        <div style={{ padding: '10px 24px', borderRadius: 8, fontSize: 12, background: 'var(--bg-elevated)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}>Output Stream</div>
+                                        <div style={{ textAlign: 'center', color: 'var(--text-tertiary)', fontSize: 18 }}>↓</div>
+                                        <div style={{ padding: '12px 28px', borderRadius: 10, fontSize: 14, fontWeight: 500, background: 'var(--bg-elevated)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}>Output Stream</div>
                                     </div>
-                                    <p style={{ marginTop: 20, textAlign: 'center', fontSize: 11, color: 'var(--text-tertiary)' }}>✅ Lossless: Preserves emotion • ✅ Fast: Streaming tokens</p>
+                                    <p style={{ marginTop: 24, textAlign: 'center', fontSize: 13, color: 'var(--text-tertiary)' }}>✅ Lossless: Preserves emotion • ✅ Fast: Streaming tokens</p>
                                 </div>
                             </div>
                         </div>
@@ -347,24 +343,24 @@ export default function Home() {
                 {/* Section: Timeline */}
                 {activeSection === 'timeline' && (
                     <section className="fade-in" style={{ marginBottom: 40 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 32 }}>
                             <History style={{ width: 24, height: 24, color: 'var(--purple)' }} />
                             <h3 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)' }}>Historical Timeline (1950-2026)</h3>
                         </div>
-                        <div style={{ position: 'relative', paddingLeft: 40, borderLeft: '2px solid var(--border)' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
                             {timelineEras.map((era, i) => (
-                                <div key={era.id} style={{ marginBottom: 40, position: 'relative' }}>
-                                    <div style={{ position: 'absolute', left: -49, top: 0, width: 16, height: 16, borderRadius: '50%', background: `var(--${era.color})`, border: '4px solid var(--bg-primary)' }} />
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-                                        <h4 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>{era.name}</h4>
-                                        <span style={{ fontSize: 11, fontFamily: 'monospace', padding: '2px 10px', borderRadius: 6, border: '1px solid var(--border)', color: 'var(--text-tertiary)' }}>{era.range}</span>
+                                <div key={era.id} className="card" style={{ padding: 24, borderTop: `3px solid var(--${era.color})` }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                                        <div style={{ width: 12, height: 12, borderRadius: '50%', background: `var(--${era.color})` }} />
+                                        <h4 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>{era.name}</h4>
                                     </div>
-                                    <p style={{ fontSize: 13, color: 'var(--text-secondary)', fontStyle: 'italic', marginBottom: 12 }}>{era.summary}</p>
+                                    <span style={{ fontSize: 11, fontFamily: 'monospace', padding: '2px 10px', borderRadius: 6, border: '1px solid var(--border)', color: 'var(--text-tertiary)', display: 'inline-block', marginBottom: 12 }}>{era.range}</span>
+                                    <p style={{ fontSize: 12, color: 'var(--text-secondary)', fontStyle: 'italic', marginBottom: 16 }}>{era.summary}</p>
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                                         {era.events.map((event, j) => (
-                                            <div key={j} style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 13 }}>
-                                                <span style={{ fontFamily: 'monospace', fontWeight: 700, color: `var(--${era.color})`, minWidth: 60 }}>{event.split(':')[0]}</span>
-                                                <span style={{ color: 'var(--text-secondary)' }}>{event.split(':')[1]}</span>
+                                            <div key={j} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 12 }}>
+                                                <span style={{ fontFamily: 'monospace', fontWeight: 700, color: `var(--${era.color})`, minWidth: 45, flexShrink: 0 }}>{event.split(':')[0]}</span>
+                                                <span style={{ color: 'var(--text-tertiary)' }}>{event.split(':')[1]}</span>
                                             </div>
                                         ))}
                                     </div>

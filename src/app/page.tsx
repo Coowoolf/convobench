@@ -66,10 +66,10 @@ const papers: Paper[] = [
 // Experience Gaps Data
 // ==========================================
 const experienceGaps = [
-    { icon: Timer, title: "Turn-Taking Gap", target: "< 500ms", color: "amber", description: "用户说完后，Agent 需要 1-3秒 才能回应，破坏对话流动感", solution: "End-to-End Models" },
-    { icon: MessageSquare, title: "Barge-In", target: "Duplex Stream", color: "cyan", description: "传统系统无法在说话时'听见'用户打断，用户必须等机器说完", solution: "Full-Duplex Architecture" },
-    { icon: Volume2, title: "Prosody & Affect", target: "Audio Tokens", color: "pink", description: "文本中间层丢失了语调、情感、笑声，导致交互'没有灵魂'", solution: "Speech-Native Models" },
-    { icon: Layers, title: "Context & Memory", target: "Agent System", color: "emerald", description: "单一模型无法处理复杂任务，需要工具调用、长期记忆和安全策略", solution: "Orchestration Layer" },
+    { icon: Timer, title: "Turn-Taking Gap", target: "< 500ms", color: "amber", description: "Agent takes 1-3s to respond after user finishes, breaking conversational flow", solution: "End-to-End Models" },
+    { icon: MessageSquare, title: "Barge-In", target: "Duplex Stream", color: "cyan", description: "Traditional systems cannot 'hear' user interruptions while speaking", solution: "Full-Duplex Architecture" },
+    { icon: Volume2, title: "Prosody & Affect", target: "Audio Tokens", color: "pink", description: "Text intermediate layer loses tone, emotion, and laughter, making interactions feel soulless", solution: "Speech-Native Models" },
+    { icon: Layers, title: "Context & Memory", target: "Agent System", color: "emerald", description: "Single models cannot handle complex tasks requiring tool calls, long-term memory, and safety policies", solution: "Orchestration Layer" },
 ];
 
 // ==========================================
@@ -86,10 +86,10 @@ const timelineEras = [
 // Insights Data (from research)
 // ==========================================
 const insights = [
-    { icon: Clock, title: "~200ms", subtitle: "Human Turn Gap", description: "人类对话间隙约 200ms，GPT-4o 已达 320ms", color: "blue" },
-    { icon: TrendingUp, title: "75+ Years", subtitle: "Research History", description: "从 1950 年图灵测试到 2026 年全双工交互", color: "purple" },
-    { icon: Zap, title: "Full-Duplex", subtitle: "Target Architecture", description: "边听边说，Moshi/GPT-4o 代表性突破", color: "pink" },
-    { icon: Brain, title: "5.1% WER", subtitle: "Human Parity", description: "2017年微软 Switchboard 达到人类水平", color: "orange" },
+    { icon: Clock, title: "~200ms", subtitle: "Human Turn Gap", description: "Human conversation gaps are ~200ms, GPT-4o achieves 320ms", color: "blue" },
+    { icon: TrendingUp, title: "75+ Years", subtitle: "Research History", description: "From 1950 Turing Test to 2026 Full-Duplex Interaction", color: "purple" },
+    { icon: Zap, title: "Full-Duplex", subtitle: "Target Architecture", description: "Simultaneous listening and speaking, Moshi/GPT-4o breakthroughs", color: "pink" },
+    { icon: Brain, title: "5.1% WER", subtitle: "Human Parity", description: "Microsoft Switchboard reached human parity in 2017", color: "orange" },
 ];
 
 const allTags = Array.from(new Set(papers.flatMap(p => p.tags))).sort();
@@ -220,8 +220,8 @@ export default function Home() {
                     <span className="gradient-text">Research & Implementation</span>
                 </h2>
                 <p style={{ marginTop: 16, fontSize: 16, color: 'var(--text-secondary)', maxWidth: 650, marginLeft: 'auto', marginRight: 'auto' }}>
-                    从 1950 年图灵测试到 2026 年全双工实时交互<br />
-                    解析 Human-Agent Interaction 的核心鸿沟、架构演进与关键文献
+                    From 1950 Turing Test to 2026 Full-Duplex Real-Time Interaction<br />
+                    Analyzing the core gaps, architectural evolution, and key literature in Human-Agent Interaction
                 </p>
 
                 {/* Hero Stats */}

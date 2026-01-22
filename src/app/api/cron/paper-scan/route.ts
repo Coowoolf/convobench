@@ -2,12 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from 'redis';
 
 const SEARCH_KEYWORDS = [
+    // Core Voice Agent
     'voice agent', 'conversational AI', 'speech dialogue',
     'full-duplex speech', 'speech-to-speech', 'voice assistant LLM',
+    // ASR/TTS Benchmarks
     'ASR benchmark', 'speech recognition evaluation',
     'TTS evaluation', 'speech synthesis quality',
+    // Multimodal Audio
     'multimodal LLM audio', 'audio language model',
-    'streaming speech generation', 'real-time voice interaction'
+    'streaming speech generation', 'real-time voice interaction',
+    // Specific Projects & Companies
+    'PersonaPlex', 'NVIDIA voice', 'GPT-4o voice', 'Gemini voice',
+    'voice cloning', 'speaker adaptation', 'zero-shot TTS',
+    'end-to-end speech model', 'neural codec', 'audio codec'
 ];
 
 interface ArxivPaper {

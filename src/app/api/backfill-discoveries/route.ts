@@ -2,25 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
 
-// Keywords to search for new voice agent papers
+// Reuse keywords from paper-scan
 const SEARCH_KEYWORDS = [
-    // Core Voice Agent
-    'voice agent',
-    'conversational AI',
-    'speech dialogue',
-    'full-duplex speech',
-    'speech-to-speech',
-    'voice assistant LLM',
-    // ASR/TTS Benchmarks
-    'ASR benchmark',
-    'speech recognition evaluation',
-    'TTS evaluation',
-    'speech synthesis quality',
-    // Multimodal Audio
-    'multimodal LLM audio',
-    'audio language model',
-    'streaming speech generation',
-    'real-time voice interaction'
+    'voice agent', 'conversational AI', 'speech dialogue',
+    'full-duplex speech', 'speech-to-speech', 'voice assistant LLM',
+    'ASR benchmark', 'speech recognition evaluation',
+    'TTS evaluation', 'speech synthesis quality',
+    'multimodal LLM audio', 'audio language model',
+    'streaming speech generation', 'real-time voice interaction'
 ];
 
 interface ArxivPaper {
@@ -30,7 +19,6 @@ interface ArxivPaper {
     summary: string;
     published: string;
     arxivId: string;
-    link: string;
 }
 
 interface Discovery {
@@ -43,7 +31,6 @@ interface Discovery {
     reviewed: boolean;
 }
 
-// Parse arXiv Atom XML response
 function parseArxivResponse(xml: string): ArxivPaper[] {
     const papers: ArxivPaper[] = [];
     const entryRegex = /<entry>([\s\S]*?)<\/entry>/g;
@@ -51,7 +38,6 @@ function parseArxivResponse(xml: string): ArxivPaper[] {
 
     while ((match = entryRegex.exec(xml)) !== null) {
         const entry = match[1];
-
         const idMatch = entry.match(/<id>(.*?)<\/id>/);
         const titleMatch = entry.match(/<title>([\s\S]*?)<\/title>/);
         const summaryMatch = entry.match(/<summary>([\s\S]*?)<\/summary>/);
@@ -66,22 +52,24 @@ function parseArxivResponse(xml: string): ArxivPaper[] {
             papers.push({
                 id: arxivId,
                 title: titleMatch[1].replace(/\s+/g, ' ').trim(),
-                authors: authors,
+                authors,
                 summary: summaryMatch ? summaryMatch[1].replace(/\s+/g, ' ').trim() : '',
                 published: publishedMatch ? publishedMatch[1] : '',
-                arxivId: arxivId,
-                link: arxivUrl
+                arxivId
             });
         }
     }
-
     return papers;
 }
 
-// Search arXiv API
-async function searchArxiv(query: string, maxResults: number = 10): Promise<ArxivPaper[]> {
+async function searchArxivByDateRange(
+    query: string,
+    startDate: string,
+    endDate: string,
+    maxResults: number = 50
+): Promise<ArxivPaper[]> {
     const encodedQuery = encodeURIComponent(query);
-    const url = `http://export.arxiv.org/api/query?search_query=all:${encodedQuery}&start=0&max_results=${maxResults}&sortBy=submittedDate&sortOrder=descending`;
+    const url = `http://export.arxiv.org/api/query?search_query=all:${encodedQuery}+AND+submittedDate:[${startDate}+TO+${endDate}]&start=0&max_results=${maxResults}&sortBy=submittedDate&sortOrder=descending`;
 
     const response = await fetch(url);
     if (!response.ok) {
@@ -92,32 +80,20 @@ async function searchArxiv(query: string, maxResults: number = 10): Promise<Arxi
     return parseArxivResponse(xml);
 }
 
-// Filter papers from last N days
-function filterRecentPapers(papers: ArxivPaper[], days: number = 7): ArxivPaper[] {
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - days);
-
-    return papers.filter(paper => {
-        const publishedDate = new Date(paper.published);
-        return publishedDate >= cutoffDate;
-    });
-}
-
 export async function GET(request: NextRequest) {
-    // Verify cron secret for Vercel
-    const authHeader = request.headers.get('authorization');
-    if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     try {
         const allPapers: ArxivPaper[] = [];
+        const startDate = '20240101'; // Jan 1, 2024
+        const endDate = '20261231';   // Dec 31, 2026
 
-        // Search for each keyword
+        console.log(`Starting backfill for ${startDate} to ${endDate}...`);
+
+        // Search each keyword
         for (const keyword of SEARCH_KEYWORDS) {
-            const papers = await searchArxiv(keyword, 5);
+            console.log(`Searching: ${keyword}`);
+            const papers = await searchArxivByDateRange(keyword, startDate, endDate, 30);
             allPapers.push(...papers);
-            // Rate limit: wait 1 second between requests
+            // Rate limit: 1 second between requests
             await new Promise(resolve => setTimeout(resolve, 1000));
         }
 
@@ -126,23 +102,38 @@ export async function GET(request: NextRequest) {
             new Map(allPapers.map(p => [p.arxivId, p])).values()
         );
 
-        // Filter recent papers (last 7 days)
-        const recentPapers = filterRecentPapers(uniquePapers, 7);
+        console.log(`Found ${uniquePapers.length} unique papers`);
+
+        // Load existing main papers to exclude
+        const mainPapersPath = path.join(process.cwd(), 'src', 'data', 'papers.ts');
+        const mainPapersContent = await fs.readFile(mainPapersPath, 'utf-8');
+        const mainArxivIds = new Set(
+            Array.from(mainPapersContent.matchAll(/arxivId:\s*["']([^"']+)["']/g))
+                .map(m => m[1])
+        );
 
         // Load existing discoveries
         const discoveriesPath = path.join(process.cwd(), 'data', 'discoveries.json');
-        let existingDiscoveries: Discovery[] = [];
+        let existingData: { discoveries: Discovery[], lastScan: string | null } = {
+            discoveries: [],
+            lastScan: null
+        };
 
         try {
             const data = await fs.readFile(discoveriesPath, 'utf-8');
-            existingDiscoveries = JSON.parse(data);
+            existingData = JSON.parse(data);
         } catch {
-            // File doesn't exist, start fresh
+            // File doesn't exist or is invalid, start fresh
         }
 
-        // Find new papers not already discovered
-        const existingIds = new Set(existingDiscoveries.map(d => d.arxivId));
-        const newPapers = recentPapers.filter(p => !existingIds.has(p.arxivId));
+        const existingDiscoveryIds = new Set(existingData.discoveries.map(d => d.arxivId));
+
+        // Filter out papers already in main collection or discoveries
+        const newPapers = uniquePapers.filter(p =>
+            !mainArxivIds.has(p.arxivId) && !existingDiscoveryIds.has(p.arxivId)
+        );
+
+        console.log(`New discoveries: ${newPapers.length}`);
 
         // Convert to discoveries format
         const newDiscoveries: Discovery[] = newPapers.map(paper => ({
@@ -156,22 +147,26 @@ export async function GET(request: NextRequest) {
         }));
 
         // Merge and save
-        const allDiscoveries = [...newDiscoveries, ...existingDiscoveries];
-        await fs.writeFile(discoveriesPath, JSON.stringify(allDiscoveries, null, 2));
+        const updatedData = {
+            discoveries: [...newDiscoveries, ...existingData.discoveries],
+            lastScan: new Date().toISOString()
+        };
 
-        // Return summary
+        await fs.writeFile(discoveriesPath, JSON.stringify(updatedData, null, 2));
+
         return NextResponse.json({
             success: true,
             timestamp: new Date().toISOString(),
+            dateRange: { startDate, endDate },
             keywordsSearched: SEARCH_KEYWORDS.length,
             totalFound: uniquePapers.length,
-            recentPapers: recentPapers.length,
-            newDiscoveries: newDiscoveries.length,
-            newPaperTitles: newDiscoveries.map(d => d.title)
+            excludedFromMain: uniquePapers.length - newPapers.length,
+            newDiscoveries: newPapers.length,
+            sampleTitles: newDiscoveries.slice(0, 5).map(d => d.title)
         });
 
     } catch (error) {
-        console.error('Paper scan error:', error);
+        console.error('Backfill error:', error);
         return NextResponse.json({
             success: false,
             error: error instanceof Error ? error.message : 'Unknown error'

@@ -165,6 +165,9 @@ export default function Home() {
                             <button onClick={toggleTheme} className="btn btn-icon">
                                 {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                             </button>
+                            <a href="/discovery" className="btn btn-ghost">
+                                <Sparkles className="w-4 h-4" /><span>Discovery</span>
+                            </a>
                             <a href="https://github.com/Coowoolf/paperhunt" target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
                                 <Github className="w-4 h-4" /><span>GitHub</span>
                             </a>

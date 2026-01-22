@@ -1,25 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
+import { createClient } from 'redis';
 
-// Keywords to search for new voice agent papers
 const SEARCH_KEYWORDS = [
-    // Core Voice Agent
-    'voice agent',
-    'conversational AI',
-    'speech dialogue',
-    'full-duplex speech',
-    'speech-to-speech',
-    'voice assistant LLM',
-    // ASR/TTS Benchmarks
-    'ASR benchmark',
-    'speech recognition evaluation',
-    'TTS evaluation',
-    'speech synthesis quality',
-    // Multimodal Audio
-    'multimodal LLM audio',
-    'audio language model',
-    'streaming speech generation',
-    'real-time voice interaction'
+    'voice agent', 'conversational AI', 'speech dialogue',
+    'full-duplex speech', 'speech-to-speech', 'voice assistant LLM',
+    'ASR benchmark', 'speech recognition evaluation',
+    'TTS evaluation', 'speech synthesis quality',
+    'multimodal LLM audio', 'audio language model',
+    'streaming speech generation', 'real-time voice interaction'
 ];
 
 interface ArxivPaper {
@@ -42,7 +30,6 @@ interface Discovery {
     reviewed: boolean;
 }
 
-// Parse arXiv Atom XML response
 function parseArxivResponse(xml: string): ArxivPaper[] {
     const papers: ArxivPaper[] = [];
     const entryRegex = /<entry>([\s\S]*?)<\/entry>/g;
@@ -50,7 +37,6 @@ function parseArxivResponse(xml: string): ArxivPaper[] {
 
     while ((match = entryRegex.exec(xml)) !== null) {
         const entry = match[1];
-
         const idMatch = entry.match(/<id>(.*?)<\/id>/);
         const titleMatch = entry.match(/<title>([\s\S]*?)<\/title>/);
         const summaryMatch = entry.match(/<summary>([\s\S]*?)<\/summary>/);
@@ -65,19 +51,17 @@ function parseArxivResponse(xml: string): ArxivPaper[] {
             papers.push({
                 id: arxivId,
                 title: titleMatch[1].replace(/\s+/g, ' ').trim(),
-                authors: authors,
+                authors,
                 summary: summaryMatch ? summaryMatch[1].replace(/\s+/g, ' ').trim() : '',
                 published: publishedMatch ? publishedMatch[1] : '',
-                arxivId: arxivId,
+                arxivId,
                 link: arxivUrl
             });
         }
     }
-
     return papers;
 }
 
-// Search arXiv API
 async function searchArxiv(query: string, maxResults: number = 10): Promise<ArxivPaper[]> {
     const encodedQuery = encodeURIComponent(query);
     const url = `http://export.arxiv.org/api/query?search_query=all:${encodedQuery}&start=0&max_results=${maxResults}&sortBy=submittedDate&sortOrder=descending`;
@@ -91,7 +75,6 @@ async function searchArxiv(query: string, maxResults: number = 10): Promise<Arxi
     return parseArxivResponse(xml);
 }
 
-// Filter papers from last N days
 function filterRecentPapers(papers: ArxivPaper[], days: number = 7): ArxivPaper[] {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - days);
@@ -103,39 +86,36 @@ function filterRecentPapers(papers: ArxivPaper[], days: number = 7): ArxivPaper[
 }
 
 export async function GET(request: NextRequest) {
-    // Verify cron secret for Vercel
     const authHeader = request.headers.get('authorization');
     if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const redis = createClient({ url: process.env.REDIS_URL });
+
     try {
+        await redis.connect();
+
         const allPapers: ArxivPaper[] = [];
 
-        // Search for each keyword
         for (const keyword of SEARCH_KEYWORDS) {
             const papers = await searchArxiv(keyword, 5);
             allPapers.push(...papers);
-            // Rate limit: wait 1 second between requests
             await new Promise(resolve => setTimeout(resolve, 1000));
         }
 
-        // Deduplicate by arxivId
         const uniquePapers = Array.from(
             new Map(allPapers.map(p => [p.arxivId, p])).values()
         );
 
-        // Filter recent papers (last 7 days)
         const recentPapers = filterRecentPapers(uniquePapers, 7);
 
-        // Load existing discoveries from KV
-        const existingDiscoveries: Discovery[] = await kv.get('discoveries') || [];
+        const existingData = await redis.get('discoveries');
+        const existingDiscoveries: Discovery[] = existingData ? JSON.parse(existingData) : [];
 
-        // Find new papers not already discovered
         const existingIds = new Set(existingDiscoveries.map(d => d.arxivId));
         const newPapers = recentPapers.filter(p => !existingIds.has(p.arxivId));
 
-        // Convert to discoveries format
         const newDiscoveries: Discovery[] = newPapers.map(paper => ({
             id: paper.arxivId,
             title: paper.title,
@@ -146,12 +126,12 @@ export async function GET(request: NextRequest) {
             reviewed: false
         }));
 
-        // Merge and save to KV
         const allDiscoveries = [...newDiscoveries, ...existingDiscoveries];
-        await kv.set('discoveries', allDiscoveries);
-        await kv.set('discoveries:lastScan', new Date().toISOString());
+        await redis.set('discoveries', JSON.stringify(allDiscoveries));
+        await redis.set('discoveries:lastScan', new Date().toISOString());
 
-        // Return summary
+        await redis.disconnect();
+
         return NextResponse.json({
             success: true,
             timestamp: new Date().toISOString(),
@@ -163,6 +143,7 @@ export async function GET(request: NextRequest) {
         });
 
     } catch (error) {
+        await redis.disconnect();
         console.error('Paper scan error:', error);
         return NextResponse.json({
             success: false,

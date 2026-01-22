@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
+import { createClient } from 'redis';
 
-// Reuse keywords from paper-scan
 const SEARCH_KEYWORDS = [
     'voice agent', 'conversational AI', 'speech dialogue',
     'full-duplex speech', 'speech-to-speech', 'voice assistant LLM',
@@ -80,39 +79,38 @@ async function searchArxivByDateRange(
 }
 
 export async function GET(request: NextRequest) {
+    const redis = createClient({ url: process.env.REDIS_URL });
+
     try {
+        await redis.connect();
+
         const allPapers: ArxivPaper[] = [];
-        const startDate = '20240101'; // Jan 1, 2024
-        const endDate = '20261231';   // Dec 31, 2026
+        const startDate = '20240101';
+        const endDate = '20261231';
 
         console.log(`Starting backfill for ${startDate} to ${endDate}...`);
 
-        // Search each keyword
         for (const keyword of SEARCH_KEYWORDS) {
             console.log(`Searching: ${keyword}`);
             const papers = await searchArxivByDateRange(keyword, startDate, endDate, 30);
             allPapers.push(...papers);
-            // Rate limit: 1 second between requests
             await new Promise(resolve => setTimeout(resolve, 1000));
         }
 
-        // Deduplicate by arxivId
         const uniquePapers = Array.from(
             new Map(allPapers.map(p => [p.arxivId, p])).values()
         );
 
         console.log(`Found ${uniquePapers.length} unique papers`);
 
-        // Load existing discoveries from KV
-        const existingDiscoveries: Discovery[] = await kv.get('discoveries') || [];
+        const existingData = await redis.get('discoveries');
+        const existingDiscoveries: Discovery[] = existingData ? JSON.parse(existingData) : [];
         const existingDiscoveryIds = new Set(existingDiscoveries.map(d => d.arxivId));
 
-        // Filter out papers already discovered
         const newPapers = uniquePapers.filter(p => !existingDiscoveryIds.has(p.arxivId));
 
         console.log(`New discoveries: ${newPapers.length}`);
 
-        // Convert to discoveries format
         const newDiscoveries: Discovery[] = newPapers.map(paper => ({
             id: paper.arxivId,
             title: paper.title,
@@ -123,10 +121,11 @@ export async function GET(request: NextRequest) {
             reviewed: false
         }));
 
-        // Merge and save to KV
         const allDiscoveries = [...newDiscoveries, ...existingDiscoveries];
-        await kv.set('discoveries', allDiscoveries);
-        await kv.set('discoveries:lastScan', new Date().toISOString());
+        await redis.set('discoveries', JSON.stringify(allDiscoveries));
+        await redis.set('discoveries:lastScan', new Date().toISOString());
+
+        await redis.disconnect();
 
         return NextResponse.json({
             success: true,
@@ -140,6 +139,7 @@ export async function GET(request: NextRequest) {
         });
 
     } catch (error) {
+        await redis.disconnect();
         console.error('Backfill error:', error);
         return NextResponse.json({
             success: false,

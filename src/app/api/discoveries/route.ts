@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
+import { createClient } from 'redis';
 
 interface Discovery {
     id: string;
@@ -12,9 +12,16 @@ interface Discovery {
 }
 
 export async function GET() {
+    const redis = createClient({ url: process.env.REDIS_URL });
+
     try {
-        const discoveries: Discovery[] = await kv.get('discoveries') || [];
-        const lastScan: string | null = await kv.get('discoveries:lastScan') || null;
+        await redis.connect();
+
+        const discoveriesData = await redis.get('discoveries');
+        const discoveries: Discovery[] = discoveriesData ? JSON.parse(discoveriesData) : [];
+        const lastScan = await redis.get('discoveries:lastScan');
+
+        await redis.disconnect();
 
         return NextResponse.json({
             discoveries,
@@ -22,6 +29,7 @@ export async function GET() {
             total: discoveries.length
         });
     } catch (error) {
+        await redis.disconnect();
         console.error('Error fetching discoveries:', error);
         return NextResponse.json({
             discoveries: [],
